@@ -1,0 +1,74 @@
+version: '2'
+
+services:
+
+### Applications Code Container #############################
+
+    applications:
+        image: tianon/true
+        volumes:
+            - ../www:/var/www
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+        build:
+            context: ./php-fpm
+        volumes_from:
+            - applications
+        volumes:
+            - ./php-fpm/opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+        links:
+            - "mariadb:mdb"
+            - "postgres:pdb"
+
+### Nginx Server Container ##################################
+
+    nginx:
+        build:
+            context: ./nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes_from:
+            - applications
+        volumes:
+            - ./logs/nginx/:/var/log/nginx
+            - ./nginx/site.conf:/etc/nginx/conf.d/default.conf
+        links:
+            - php-fpm
+
+### MariaDB Container #######################################
+
+    mariadb:
+        build: ./mariadb
+        volumes:
+            - mariadb:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: julio
+            MYSQL_USER: julio
+            MYSQL_PASSWORD: pico
+            MYSQL_ROOT_PASSWORD: root
+
+### PostgreSQL Container ####################################
+
+    postgres:
+        build: ./postgres
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: julio
+            POSTGRES_USER: julio
+            POSTGRES_PASSWORD: pico
+
+volumes:
+  mariadb:
+    driver: "local"
+  postgres:
+    driver: "local"
+  sessions:    ## nothing is connected to this (- ./data/sessions:/sessions)
+    driver: "local"

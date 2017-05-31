@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 services:
 
@@ -9,18 +9,57 @@ services:
         volumes:
             - ../www:/var/www
 
+### VSFTPD Container #######################################
+            
+    vsftpd:
+        build:
+            context: ./vsftpd
+        ports:
+        - "21:21"
+        - "21100-21110:21100-21110"
+        volumes:
+            - ../www/media:/home/julio/
+        environment:
+            FTP_USER: julio
+            FTP_PASS: pico
+            PASV_ADDRESS: 172.16.1.8
+            PASV_MIN: 21100
+            PASV_MAX: 21110
+        restart: always
+        networks:
+            default:
+                ipv4_address: 172.16.1.8
+
+### Redis Container #######################################
+    
+    redis:
+        build:
+            context: ./redis
+        volumes:
+            - redis:/data
+        networks:
+            default:
+                ipv4_address: 172.16.1.7
+
 ### PHP-FPM Container #######################################
 
-    php-fpm:
+    php7:
         build:
-            context: ./php-fpm
+            context: ./php7
         volumes_from:
             - applications
         volumes:
-            - ./php-fpm/opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+            - ./php7/php-fpm.conf:/etc/php7/php-fpm.conf
         links:
             - "mariadb:mdb"
             - "postgres:pdb"
+            - vsftpd
+            - redis
+        extra_hosts:
+            - "keepo.dev:172.16.1.5"
+        networks:
+            default:
+                ipv4_address: 172.16.1.6
 
 ### Nginx Server Container ##################################
 
@@ -34,14 +73,20 @@ services:
             - applications
         volumes:
             - ./logs/nginx/:/var/log/nginx
-            - ./nginx/site.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         links:
-            - php-fpm
+            - php7:php-fpm
+        networks:
+            default:
+                ipv4_address: 172.16.1.5
 
 ### MariaDB Container #######################################
 
     mariadb:
         build: ./mariadb
+        volumes_from:
+            - applications
         volumes:
             - mariadb:/var/lib/mysql
         ports:
@@ -51,6 +96,9 @@ services:
             MYSQL_USER: julio
             MYSQL_PASSWORD: pico
             MYSQL_ROOT_PASSWORD: root
+        networks:
+            default:
+                ipv4_address: 172.16.1.10
 
 ### PostgreSQL Container ####################################
 
@@ -64,11 +112,23 @@ services:
             POSTGRES_DB: julio
             POSTGRES_USER: julio
             POSTGRES_PASSWORD: pico
+        networks:
+            default:
+                ipv4_address: 172.16.1.11
 
 volumes:
   mariadb:
+    driver: "local"
+  redis:
     driver: "local"
   postgres:
     driver: "local"
   sessions:    ## nothing is connected to this (- ./data/sessions:/sessions)
     driver: "local"
+
+networks:
+    default:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.16.1.0/24

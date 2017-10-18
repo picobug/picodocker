@@ -1,13 +1,6 @@
-version: '2.1'
+version: '3.3'
 
 services:
-
-### Applications Code Container #############################
-
-    applications:
-        image: tianon/true
-        volumes:
-            - ../www:/var/www
 
 ### VSFTPD Container #######################################
             
@@ -19,6 +12,7 @@ services:
         - "21100-21110:21100-21110"
         volumes:
             - ../www/media:/home/julio/
+            - ../www:/var/www
         environment:
             FTP_USER: julio
             FTP_PASS: pico
@@ -37,24 +31,40 @@ services:
             context: ./redis
         volumes:
             - redis:/data
+            - ../www:/var/www
         networks:
             default:
                 ipv4_address: 172.16.1.7
+
+### Nodes Container #######################################
+    
+    node:
+        build:
+            context: ./node
+        ports:
+            - "9001:8080"
+        volumes:
+            - ./node/dist:/usr/src/app/dist
+        networks:
+            default:
+                ipv4_address: 172.16.1.9
 
 ### PHP-FPM Container #######################################
 
     php7:
         build:
             context: ./php7
-        volumes_from:
-            - applications
+        volumes:
+            - ../www:/var/www
         links:
             - "mariadb:mdb"
             - "postgres:pdb"
             - vsftpd
             - redis
         extra_hosts:
-            - "your-vhost.dev:172.16.1.5"
+            - "keepo.dev:172.16.1.5"
+            - "m.keepo.dev:172.16.1.5"
+            - "media.keepo.dev:172.16.1.5"
         networks:
             default:
                 ipv4_address: 172.16.1.6
@@ -67,14 +77,35 @@ services:
         ports:
             - "80:80"
             - "443:443"
-        volumes_from:
-            - applications
         volumes:
+            - ../www:/var/www
             - ./logs/nginx/:/var/log/nginx
             - ./nginx/conf.d/:/etc/nginx/conf.d/
             - ./nginx/site.conf:/etc/nginx/nginx.conf
         links:
             - php7:php-fpm
+            # - node
+        networks:
+            default:
+                ipv4_address: 172.16.1.5
+
+### Nginx Server Container ##################################
+
+    pagespeed:
+        build:
+            context: ./pagespeed
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ../www:/var/www
+            - ./logs/nginx/:/var/log/nginx
+            - ./pagespeed/conf.d/:/etc/nginx/conf.d/
+            - ./pagespeed/sites-enabled/:/etc/nginx/sites-enabled/
+            - ./pagespeed/nginx.conf:/etc/nginx/nginx.conf
+        links:
+            - php7:php-fpm
+            # - node
         networks:
             default:
                 ipv4_address: 172.16.1.5
@@ -83,15 +114,17 @@ services:
 
     mariadb:
         build: ./mariadb
-        volumes_from:
-            - applications
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         volumes:
+            - ../www:/var/www
             - mariadb:/var/lib/mysql
         ports:
             - "3306:3306"
         environment:
-            DB_USER: julio
-            DB_PASS: pico
+            MYSQL_DATABASE: julio_pico
+            MYSQL_USER: julio
+            MYSQL_PASSWORD: pico
+            MYSQL_ROOT_PASSWORD: root
         networks:
             default:
                 ipv4_address: 172.16.1.10
@@ -101,6 +134,7 @@ services:
     postgres:
         build: ./postgres
         volumes:
+            - ../www:/var/www
             - postgres:/var/lib/postgresql/data
         ports:
             - "5432:5432"

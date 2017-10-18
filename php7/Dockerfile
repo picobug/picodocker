@@ -15,4 +15,5 @@ RUN apk update && apk upgrade && apk add --no-cache bash \
 	php7-tokenizer \
 	php7-exif \
 	php7 \
+	&& apk del tzdata \
 	&& rm -rf /var/cache/apk/*

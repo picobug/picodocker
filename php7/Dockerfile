@@ -2,7 +2,7 @@
 FROM alpine:edge
 
 # Maintainer
-MAINTAINER Muhammad Zamroni <halo@matriphe.com>
+LABEL maintainer="Julian Prasetyo <picobug.jp@gmail.com>"
 
 # Environments
 ENV TIMEZONE            Asia/Jakarta

@@ -32,6 +32,7 @@ services:
         volumes:
             - redis:/data
             - ../www:/var/www
+        restart: always
         networks:
             default:
                 ipv4_address: 172.16.1.7
@@ -56,6 +57,7 @@ services:
             context: ./php7
         volumes:
             - ../www:/var/www
+            - ./php7/www.conf:/etc/php7/php-fpm.d/www.conf
         links:
             - "mariadb:mdb"
             - "postgres:pdb"
@@ -65,6 +67,7 @@ services:
             - "keepo.dev:172.16.1.5"
             - "m.keepo.dev:172.16.1.5"
             - "media.keepo.dev:172.16.1.5"
+        restart: always
         networks:
             default:
                 ipv4_address: 172.16.1.6
@@ -85,6 +88,7 @@ services:
         links:
             - php7:php-fpm
             # - node
+        restart: always
         networks:
             default:
                 ipv4_address: 172.16.1.5
@@ -125,6 +129,7 @@ services:
             MYSQL_USER: julio
             MYSQL_PASSWORD: pico
             MYSQL_ROOT_PASSWORD: root
+        restart: always
         networks:
             default:
                 ipv4_address: 172.16.1.10
@@ -142,6 +147,7 @@ services:
             POSTGRES_DB: julio
             POSTGRES_USER: julio
             POSTGRES_PASSWORD: pico
+        restart: always
         networks:
             default:
                 ipv4_address: 172.16.1.11

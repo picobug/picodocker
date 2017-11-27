@@ -1,8 +1,4 @@
-FROM picobug/keepo
+FROM keymetrics/pm2
 
-MAINTAINER Julio Pico <picobug.jp@gmail.com>
+LABEL maintainer="Julio Pico <picobug.jp@gmail.com>"
 
-RUN npm run build
-
-EXPOSE 8080
-CMD [ "npm", "start" ]

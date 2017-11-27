@@ -1,3 +1,3 @@
 FROM mariadb
 
-MAINTAINER Julio Pico <picobug.jp@gmail.com>
+LABEL maintainer="Julio Pico <picobug.jp@gmail.com>"

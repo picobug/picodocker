@@ -1,3 +1,5 @@
 FROM postgres:alpine
 
-MAINTAINER Ben M <git@bmagg.com>
+LABEL maintainer="Julian Prasetyo <picobug.jp@gmail.com>"
+
+ADD *.sql /docker-entrypoint-initdb.d/

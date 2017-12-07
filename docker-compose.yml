@@ -7,12 +7,8 @@ services:
     vsftpd:
         build:
             context: ./vsftpd
-        ports:
-        - "21:21"
-        - "21100-21110:21100-21110"
         volumes:
-            - ../www/media:/home/julio/
-            - ../www:/var/www
+            - ./www/sites/media.keepo:/home/julio/
         environment:
             FTP_USER: julio
             FTP_PASS: pico
@@ -31,7 +27,6 @@ services:
             context: ./redis
         volumes:
             - redis:/data
-            - ../www:/var/www
         restart: always
         networks:
             default:
@@ -42,8 +37,6 @@ services:
     node:
         build:
             context: ./node
-        ports:
-            - "9001:8080"
         volumes:
             - ./node/dist:/usr/src/app/dist
         networks:
@@ -56,7 +49,7 @@ services:
         build:
             context: ./php7
         volumes:
-            - ../www:/var/www
+            - ./www:/www
             - ./php7/www.conf:/etc/php7/php-fpm.d/www.conf
         links:
             - "mariadb:mdb"
@@ -77,13 +70,12 @@ services:
     nginx:
         build:
             context: ./nginx
-        ports:
-            - "80:80"
-            - "443:443"
         volumes:
-            - ../www:/var/www
+            - ./www:/www
             - ./logs/nginx/:/var/log/nginx
             - ./nginx/conf.d/:/etc/nginx/conf.d/
+            - ./nginx/nginx-enabled/:/etc/nginx/sites-enabled/
+            - ./nginx/base/:/etc/nginx/base/
             - ./nginx/site.conf:/etc/nginx/nginx.conf
         links:
             - php7:php-fpm
@@ -97,16 +89,14 @@ services:
 
     pagespeed:
         build:
-            context: ./pagespeed
-        ports:
-            - "80:80"
-            - "443:443"
+            context: ./nginx/pagespeed
         volumes:
-            - ../www:/var/www
+            - ./www:/www
             - ./logs/nginx/:/var/log/nginx
-            - ./pagespeed/conf.d/:/etc/nginx/conf.d/
-            - ./pagespeed/sites-enabled/:/etc/nginx/sites-enabled/
-            - ./pagespeed/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+            - ./nginx/base/:/etc/nginx/base/
+            - ./nginx/speed-enabled/:/etc/nginx/sites-enabled/
+            - ./nginx/pagespeed/nginx.conf:/etc/nginx/nginx.conf
         links:
             - php7:php-fpm
             # - node
@@ -120,10 +110,7 @@ services:
         build: ./mariadb
         command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         volumes:
-            - ../www:/var/www
             - mariadb:/var/lib/mysql
-        ports:
-            - "3306:3306"
         environment:
             MYSQL_DATABASE: julio_pico
             MYSQL_USER: julio
@@ -139,10 +126,7 @@ services:
     postgres:
         build: ./postgres
         volumes:
-            - ../www:/var/www
             - postgres:/var/lib/postgresql/data
-        ports:
-            - "5432:5432"
         environment:
             POSTGRES_DB: julio
             POSTGRES_USER: julio

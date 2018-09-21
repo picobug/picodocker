@@ -15,7 +15,7 @@ ENV PHP_MAX_POST        100M
 RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
 	apk update && \
 	apk upgrade && \
-	apk add --update tzdata && \
+	apk add --update tzdata gnu-libiconv && \
 	cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
 	echo "${TIMEZONE}" > /etc/timezone && \
 	apk add --update \
@@ -70,6 +70,7 @@ RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 	apk del tzdata && \
 	rm -rf /var/cache/apk/*
 
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 # Set Workdir
 WORKDIR /www
 

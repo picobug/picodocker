@@ -95,8 +95,5 @@ WORKDIR /www
 # Expose volumes
 VOLUME ["/www"]
 
-# Expose ports
-EXPOSE 9000
-
 # Command
 CMD ["php", "-a"]

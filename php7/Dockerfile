@@ -1,24 +1,20 @@
-# Use Alpine Linux
-FROM alpine:edge
+FROM alpine:3.8
 
-# Maintainer
 LABEL maintainer="Julian Prasetyo <picobug.jp@gmail.com>"
 
-# Environments
 ENV TIMEZONE            Asia/Jakarta
 ENV PHP_MEMORY_LIMIT    512M
 ENV MAX_UPLOAD          50M
 ENV PHP_MAX_FILE_UPLOAD 200
 ENV PHP_MAX_POST        100M
 
-# Let's roll
-RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-	apk update && \
-	apk upgrade && \
-	apk add --update tzdata gnu-libiconv && \
+RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN apk update && \
+	apk upgrade
+RUN apk add --update tzdata gnu-libiconv && \
 	cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-	echo "${TIMEZONE}" > /etc/timezone && \
-	apk add --update \
+	echo "${TIMEZONE}" > /etc/timezone
+RUN apk add --update \
 	php7-ftp \
 	php7-ssh2 \
 	php7-xml \
@@ -50,12 +46,11 @@ RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 	php7-curl \
 	php7-ctype \
 	php7-sodium \
-	php7-igbinary \
 	php7 \
-	php7-fpm && \
+	php7-fpm
 
-	# Set environments
-	sed -i "s|;*daemonize\s*=\s*yes|daemonize = no|g" /etc/php7/php-fpm.conf && \
+# Set environments
+RUN sed -i "s|;*daemonize\s*=\s*yes|daemonize = no|g" /etc/php7/php-fpm.conf && \
 	sed -i "s|;*listen\s*=\s*127.0.0.1:9000|listen = 9000|g" /etc/php7/php-fpm.d/www.conf && \
 	sed -i "s|;*listen\s*=\s*/||g" /etc/php7/php-fpm.d/www.conf && \
 	sed -i "s|;*date.timezone =.*|date.timezone = ${TIMEZONE}|i" /etc/php7/php.ini && \
@@ -63,10 +58,10 @@ RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 	sed -i "s|;*upload_max_filesize =.*|upload_max_filesize = ${MAX_UPLOAD}|i" /etc/php7/php.ini && \
 	sed -i "s|;*max_file_uploads =.*|max_file_uploads = ${PHP_MAX_FILE_UPLOAD}|i" /etc/php7/php.ini && \
 	sed -i "s|;*post_max_size =.*|post_max_size = ${PHP_MAX_POST}|i" /etc/php7/php.ini && \
-	sed -i "s|;*cgi.fix_pathinfo=.*|cgi.fix_pathinfo= 0|i" /etc/php7/php.ini && \
+	sed -i "s|;*cgi.fix_pathinfo=.*|cgi.fix_pathinfo= 0|i" /etc/php7/php.ini
 
-	# Cleaning up
-	mkdir /www && \
+# Cleaning up
+RUN mkdir /www && \
 	apk del tzdata && \
 	rm -rf /var/cache/apk/*
 

@@ -8,7 +8,10 @@ ENV MAX_UPLOAD          50M
 ENV PHP_MAX_FILE_UPLOAD 200
 ENV PHP_MAX_POST        100M
 
-RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+	set -x \
+	&& addgroup -g 82 -S www-data \
+	&& adduser -u 82 -D -S -G www-data www-data
 RUN apk update && \
 	apk upgrade
 RUN apk add --update tzdata gnu-libiconv && \
@@ -16,7 +19,6 @@ RUN apk add --update tzdata gnu-libiconv && \
 	echo "${TIMEZONE}" > /etc/timezone
 RUN apk add --update \
 	php7-ftp \
-	php7-ssh2 \
 	php7-xml \
 	php7-simplexml \
 	php7-fileinfo \

@@ -12,14 +12,15 @@ RUN	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/reposit
 	set -x \
 	&& addgroup -g 82 -S www-data \
 	&& adduser -u 82 -D -S -G www-data www-data
-RUN apk update && \
-	apk upgrade
+RUN apk update
 RUN apk add --update tzdata gnu-libiconv && \
 	cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
 	echo "${TIMEZONE}" > /etc/timezone
 RUN apk add --update \
 	php7-ftp \
 	php7-xml \
+	php7-xmlwriter \
+	php7-xmlreader \
 	php7-simplexml \
 	php7-fileinfo \
 	php7-session \
@@ -48,6 +49,7 @@ RUN apk add --update \
 	php7-curl \
 	php7-ctype \
 	php7-sodium \
+	php7-zip \
 	php7 \
 	php7-fpm
 

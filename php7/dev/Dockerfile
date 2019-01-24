@@ -1,6 +1,8 @@
 FROM php:7-fpm-alpine
 RUN set -ex && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.8/main" > /etc/apk/repositories && \
+    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.8/community" >> /etc/apk/repositories && \
+    echo "http://mirror.aarnet.edu.au/pub/alpine/edge/testing" >> /etc/apk/repositories && \
     apk update && apk add \
     libpq libzip libzip-dev postgresql-dev gnu-libiconv \
     freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \

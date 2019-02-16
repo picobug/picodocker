@@ -1,7 +1,7 @@
 FROM php:7-fpm-alpine
 RUN set -ex && \
-    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.8/main" > /etc/apk/repositories && \
-    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.8/community" >> /etc/apk/repositories && \
+    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.9/main" > /etc/apk/repositories && \
+    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.9/community" >> /etc/apk/repositories && \
     echo "http://mirror.aarnet.edu.au/pub/alpine/edge/testing" >> /etc/apk/repositories && \
     apk update && apk add \
     libpq libzip libzip-dev postgresql-dev gnu-libiconv \
@@ -19,6 +19,7 @@ RUN set -ex && \
 RUN mkdir /www \
     && apk del freetype-dev libpng-dev libjpeg-turbo-dev postgresql-dev libzip-dev \
     && pecl update-channels \
+    && echo "opcache.save_comments=1" >> $PHP_INI_DIR/conf.d/docker-php-ext-opcache.ini \
     && rm -rf /tmp/pear ~/.pearrc \
     && rm -rf /var/cache/apk/*
 

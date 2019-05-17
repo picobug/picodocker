@@ -1,11 +1,10 @@
 FROM php:7-fpm-alpine
 RUN set -ex && \
-    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.9/main" > /etc/apk/repositories && \
-    echo "http://mirror.aarnet.edu.au/pub/alpine/v3.9/community" >> /etc/apk/repositories && \
-    echo "http://mirror.aarnet.edu.au/pub/alpine/edge/testing" >> /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk update && apk add \
-    libpq libzip libzip-dev postgresql-dev gnu-libiconv \
+    libpq libzip libzip-dev postgresql-dev \
     freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
+    apk add gnu-libiconv --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted && \
     docker-php-ext-configure gd \
     --with-gd \
     --with-freetype-dir=/usr/include/ \

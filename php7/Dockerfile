@@ -12,8 +12,9 @@ RUN set -ex && \
 	--with-jpeg-dir=/usr/include/ && \
 	NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
 	pecl install redis && \
-	docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip iconv \
-	&& docker-php-ext-enable redis
+	pecl install mongodb && \
+	docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip iconv bcmath \
+	&& docker-php-ext-enable redis mongodb
 
 RUN mkdir /www \
 	&& apk del freetype-dev libpng-dev libjpeg-turbo-dev postgresql-dev libzip-dev \

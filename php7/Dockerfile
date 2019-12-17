@@ -1,9 +1,11 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.3-fpm-alpine
 RUN set -ex && \
 	echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-	apk update && apk add \
-	libpq libzip libzip-dev postgresql-dev \
-	freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
+	apk update && \
+	apk add --no-cache --virtual .php-deps \
+	libpq libzip freetype libpng libjpeg-turbo && \
+	apk add --no-cache --virtual .build-deps \
+	libzip-dev postgresql-dev freetype-dev libpng-dev libjpeg-turbo-dev && \
 	apk add gnu-libiconv --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted && \
 	docker-php-ext-configure gd \
 	--with-gd \
@@ -12,12 +14,12 @@ RUN set -ex && \
 	--with-jpeg-dir=/usr/include/ && \
 	NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
 	pecl install redis && \
-	pecl install mongodb && \
 	docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip iconv bcmath \
-	&& docker-php-ext-enable redis mongodb
+	&& docker-php-ext-enable redis
 
 RUN mkdir /www \
-	&& apk del freetype-dev libpng-dev libjpeg-turbo-dev postgresql-dev libzip-dev \
+	&& apk del .build-deps \
+	&& rm -rf /tmp/* /usr/local/lib/php/doc/* /var/cache/apk/* \
 	&& pecl update-channels \
 	&& echo "opcache.save_comments=1" >> $PHP_INI_DIR/conf.d/docker-php-ext-opcache.ini \
 	&& rm -rf /tmp/pear ~/.pearrc \

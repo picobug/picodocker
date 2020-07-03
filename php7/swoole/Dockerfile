@@ -12,7 +12,7 @@ RUN set -ex && \
     --with-jpeg && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis && pecl install swoole && \
-    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath \
+    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip soap bcmath \
     && docker-php-ext-enable redis && docker-php-ext-enable swoole
 
 RUN mkdir /www \

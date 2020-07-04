@@ -1,7 +1,7 @@
 FROM php:7-alpine
 RUN set -ex && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-    sed -i -e 's/http:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/alpine.global.ssl.fastly.net\/alpine/g' /etc/apk/repositories && \
+    sed -i -e 's/http:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/download.nus.edu.sg\/mirror\/alpine/g' /etc/apk/repositories && \
     apk update && \
     apk add --no-cache --virtual .php-deps \
     libpq libzip freetype libpng libjpeg-turbo && \

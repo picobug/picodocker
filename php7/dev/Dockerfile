@@ -6,14 +6,14 @@ RUN set -ex && \
     apk add --virtual .php-deps \
     libpq libzip freetype libpng libjpeg-turbo && \
     apk add --virtual .build-deps \
-    libzip-dev postgresql-dev freetype-dev libpng-dev libjpeg-turbo-dev && \
+    libzip-dev postgresql-dev freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev && \
     apk add gnu-libiconv --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted && \
     docker-php-ext-configure gd \
     --with-freetype \
     --with-jpeg && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis && \
-    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath \
+    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath soap xml \
     && docker-php-ext-enable redis
 
 RUN mkdir /www \

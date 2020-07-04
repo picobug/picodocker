@@ -1,6 +1,7 @@
 FROM php:7-alpine
 RUN set -ex && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    sed -i -e 's/http:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/alpine.global.ssl.fastly.net\/alpine/g' /etc/apk/repositories && \
     apk update && \
     apk add --no-cache --virtual .php-deps \
     libpq libzip freetype libpng libjpeg-turbo && \
@@ -12,7 +13,7 @@ RUN set -ex && \
     --with-jpeg && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis && pecl install swoole && \
-    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip soap bcmath \
+    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath \
     && docker-php-ext-enable redis && docker-php-ext-enable swoole
 
 RUN mkdir /www \

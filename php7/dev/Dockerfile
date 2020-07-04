@@ -1,10 +1,11 @@
 FROM php:7-fpm-alpine
 RUN set -ex && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    sed -i -e 's/http:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/alpine.global.ssl.fastly.net\/alpine/g' /etc/apk/repositories && \
     apk update && \
-    apk add --no-cache --virtual .php-deps \
+    apk add --virtual .php-deps \
     libpq libzip freetype libpng libjpeg-turbo && \
-    apk add --no-cache --virtual .build-deps \
+    apk add --virtual .build-deps \
     libzip-dev postgresql-dev freetype-dev libpng-dev libjpeg-turbo-dev && \
     apk add gnu-libiconv --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted && \
     docker-php-ext-configure gd \
@@ -12,7 +13,7 @@ RUN set -ex && \
     --with-jpeg && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis && \
-    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath soap \
+    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath \
     && docker-php-ext-enable redis
 
 RUN mkdir /www \

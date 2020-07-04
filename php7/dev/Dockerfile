@@ -3,9 +3,9 @@ RUN set -ex && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     sed -i -e 's/http:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/alpine.global.ssl.fastly.net\/alpine/g' /etc/apk/repositories && \
     apk update && \
-    apk add --virtual .php-deps \
+    apk add --no-cache --virtual .php-deps \
     libpq libzip freetype libpng libjpeg-turbo && \
-    apk add --virtual .build-deps \
+    apk add --no-cache --virtual .build-deps \
     libzip-dev postgresql-dev freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev && \
     apk add gnu-libiconv --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted && \
     docker-php-ext-configure gd \

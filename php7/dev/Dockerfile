@@ -14,9 +14,8 @@ RUN set -ex && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis sqlsrv pdo_sqlsrv && \
     docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath soap xml intl \
-    && docker-php-ext-enable redis sqlsrv pdo_sqlsrv
-
-RUN mkdir /www \
+    && docker-php-ext-enable redis sqlsrv pdo_sqlsrv \
+    && mkdir /www \
     && apk del .build-deps \
     && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.5.2.2-1_amd64.apk \
     && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.5.2.1-1_amd64.apk \

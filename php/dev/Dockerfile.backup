@@ -1,4 +1,4 @@
-FROM php:fpm-alpine
+FROM php:8.0-fpm-alpine
 RUN set -ex && \
     echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     sed -i -e 's/https:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/download.nus.edu.sg\/mirror\/alpine/g' /etc/apk/repositories && \

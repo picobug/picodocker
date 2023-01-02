@@ -17,7 +17,7 @@ RUN set -ex && \
     #--with-jpeg-dir=/usr/include && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis mcrypt && \
-    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip iconv bcmath soap xml intl exif \
+    docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip bcmath soap xml intl exif \
     && docker-php-ext-enable redis mcrypt \
     && mkdir /www \
     && apk del .build-deps \

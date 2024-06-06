@@ -1,6 +1,6 @@
-FROM php:fpm-alpine
-COPY --from=composer /usr/bin/composer /usr/bin/composer
-#COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+FROM dunglas/frankenphp:alpine
+
+# add additional extensions here:
 RUN set -ex && \
     echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk update && \
@@ -27,14 +27,11 @@ RUN set -ex && \
     pecl install redis && \
     docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql opcache intl zip \
     && docker-php-ext-enable redis \
-    && mkdir /www \
     && apk del .build-deps \
+    && apk update && apk add --no-cache --virtual .node \
+    chromium nodejs npm && npm i -g puppeteer && npm cache clean --force && rm -rf /root/.cache /root/.npm /tmp/* /usr/local/lib/php/doc/* ~/.pearrc /var/cache/apk/* \
     && rm -rf /tmp/* /usr/local/lib/php/doc/* /var/cache/apk/* \
     && echo "opcache.save_comments=1" >> $PHP_INI_DIR/conf.d/docker-php-ext-opcache.ini \
     && rm -rf /tmp/pear ~/.pearrc \
-    && rm -rf /var/cache/apk/*
-
-WORKDIR /www
-
-# Expose volumes
-VOLUME ["/www"]
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /usr/local/bin/php-cgi /usr/local/bin/phpdbg && docker-php-source delete \

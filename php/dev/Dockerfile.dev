@@ -1,6 +1,7 @@
-FROM php:8.1-fpm-alpine
+FROM php:fpm-alpine
 RUN set -ex && \
     echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    sed -i -e 's/https:\/\/dl-cdn.alpinelinux.org\/alpine/https:\/\/download.nus.edu.sg\/mirror\/alpine/g' /etc/apk/repositories && \
     apk update && \
     apk add --no-cache --virtual .php-deps \
     libpq libzip freetype libpng libjpeg-turbo libwebp icu-libs libmcrypt && \

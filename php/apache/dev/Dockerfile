@@ -1,12 +1,12 @@
-FROM php:7-apache
+FROM php:apache
 RUN set -ex && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    libpq5 zlib1g-dev libzip4 libfreetype6 libpng-tools libjpeg-turbo-progs \
-    libpq-dev libzip-dev libfreetype6-dev libpng-dev libjpeg-dev libxml2-dev && \
+    libpq5 zlib1g-dev libzip4 libfreetype6 libpng-tools libjpeg-turbo-progs libwebp6 \
+    libpq-dev libzip-dev libfreetype6-dev libpng-dev libjpeg-dev libxml2-dev libwebp-dev && \
     docker-php-ext-configure gd \
-    --with-freetype \
-    --with-jpeg && \
+    --with-freetype --with-webp \
+    --with-jpeg=/user/include --enable-gd && \
     NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
     pecl install redis && \
     docker-php-ext-install -j${NPROC} gd pdo_pgsql pdo_mysql mysqli opcache zip iconv bcmath soap xml intl \

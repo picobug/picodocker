@@ -1,0 +1,14 @@
+FROM dunglas/frankenphp:alpine
+
+# add additional extensions here:
+RUN install-php-extensions \
+	pdo_mysql \
+    pdo_pgsql \
+	gd \
+	intl \
+	zip \
+	opcache \
+    redis && \
+    rm -rf /usr/local/bin/php-cgi /usr/local/bin/phpdbg && docker-php-source delete && \
+    apk update && apk add --no-cache --virtual .node \
+    chromium nodejs npm && npm i -g puppeteer && npm cache clean --force && rm -rf /root/.cache /root/.npm /tmp/* /usr/local/lib/php/doc/* ~/.pearrc /var/cache/apk/*
